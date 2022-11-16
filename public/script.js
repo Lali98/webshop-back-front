@@ -51,27 +51,40 @@ function renderEditProduct() {
 
     document.getElementById('edit-product').innerHTML = editFormHTML;
 
-    document.getElementById('update-product').onsubmit = function (event) {
+    document.getElementById('update-product').onsubmit = async function (event) {
         event.preventDefault();
         var price = Number(event.target.elements.price.value);
         var name = event.target.elements.name.value;
         var isInStock = event.target.elements.isInStock.checked;
 
-        var foundIndex;
+       /* var foundIndex;
         for (var index = 0; index < state.products.length; index++) {
             if (state.products[index].id === state.editedId) {
                 foundIndex = index;
                 break;
             }
-        }
+        }*/
 
         // state change
-        state.products[foundIndex] = {
-            id: state.editedId,
+        let body = {
+            // id: state.editedId,
             name: name,
             price: price,
             isInStock: isInStock,
         };
+        const res = await fetch(`/products/${state.editedId}`, {
+            method: 'PUT',
+            body: JSON.stringify(body),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!res.ok) {
+            alert('Error');
+            return;
+        }
+
         state.editedId = '';
 
         // render
